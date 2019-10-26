@@ -149,7 +149,7 @@ class ICMPConnect:
     ('127.0.0.1', 0))
     """
 
-    def recv(self, size=1024, timeout=3) -> tuple:
+    def recv(self, size=1024) -> tuple:
         """返回 ICMP 响应
 
         :return: 一个 ICMPMessage 实例和源地址
@@ -162,16 +162,18 @@ class ICMPConnect:
         packet = message.pack()
         self.s.sendto(packet, (self.target, self.port))
 
-    def __init__(self, target: str, port=0):
+    def __init__(self, target: str, port=0, timeout=3):
         """初始化链接
 
         :param str target: 字符串类型的 IP 地址或域名
         :param int port: 发送到目标地址的指定端口，默认 0
+        :param int timeout: 超时时间, 默认 3 秒
         """
         self.target = target
         self.port = port
         self.s = socket.socket(
             socket.AF_INET, socket.SOCK_RAW, socket.getprotobyname("icmp"))
+        self.s.settimeout(timeout)
 
     def __repr__(self):
         return f"ICMPConnect(target='{self.target}', port={self.port})"
