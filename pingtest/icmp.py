@@ -12,6 +12,7 @@ HTTP 协议
 import struct
 import socket
 
+__all__ = ("ICMPMessage", "ICMPConnect")
 
 def icmp_checksum(content: bytes) -> int:
     """计算 icmp 报文的检验和。
