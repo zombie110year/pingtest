@@ -123,8 +123,14 @@ class ICMPConnect:
     """一个 ICMP 连接
     """
 
-    def recv(self, size=1024, timeout=3):
-        return self.s.recvfrom(size)
+    def recv(self, size=1024, timeout=3) -> tuple:
+        """返回 ICMP 响应
+
+        :return: 一个 ICMPMessage 实例和源地址
+        """
+        packet, address = self.s.recvfrom(size)
+        icmp_message = ICMPMessage.unpack(packet)
+        return icmp_message, address
 
     def send(self, message: ICMPMessage):
         packet = message.pack()
