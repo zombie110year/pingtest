@@ -64,6 +64,7 @@ def extract_icmp_from_ip(packet: bytes) -> bytes:
     head_length = 20
     return packet[head_length:]
 
+
 class ICMPMessage:
     """一个 ICMP 报文
 
