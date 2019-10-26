@@ -19,3 +19,5 @@ def test_icmp_checksum():
 def test_ICMPMessage_pack():
     x = ICMPMessage(b"Hello World", ICMPMessage.TYPE_ECHO_REQUEST)
     assert x.pack() == b"\x08\x00\x59\xcc\x00\x00\x00\x00Hello World"
+    assert x.pack() == b"\x08\x00\x59\xcc\x00\x00\x00\x00Hello World"
+    assert x.pack() == b"\x08\x00\x59\xcc\x00\x00\x00\x00Hello World"
