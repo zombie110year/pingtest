@@ -44,3 +44,12 @@ def test_icmp_checksum2():
     assert ICMPMessage(b"abcdefghijklmnopqrstuvwxyz1").checksum == 0x3864
     assert ICMPMessage(b"abcdefghijklmnopqrstuvwxyz123").checksum == 0x0532
     assert ICMPMessage(b"abcdefghijklmnopqrstuvwxyz12345").checksum == 0xcffd
+
+def test_ICMPMessage_unpack():
+    packet = b"E\x00\x00'\xbb\x85\x00\x00@\x01\xff%\xc0\xa8\x1f\xd6\xc0\xa8\x1f\x04\x00\x00\xae1\x00\x00\x00\x00Hello World"
+    im = ICMPMessage.unpack(packet)
+    assert im.checksum == int.from_bytes(b"\xae1", "big")
+    assert im.type == 0
+    assert im.code == 0
+    assert im.id == 0x0000
+    assert im.seq == 0x0000

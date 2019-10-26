@@ -41,6 +41,29 @@ def icmp_checksum(content: bytes) -> int:
     return (~ans) & 0xffff
 
 
+def extract_icmp_from_ip(packet: bytes) -> bytes:
+    """从 IP 报文中提取出属于 imcp 报文的部分
+
+    一个 ICMP 响应报文被包含在 IP 报文中，IP 报文头部结构为
+
+    - 4 bit version
+    - 4 bit head-length
+    - 8 bit type-of-service
+    - 16 bit all-length
+    - 16 bit id
+    - 3 bit flag
+    - 13 bit offset
+    - 8 bit ttl
+    - 8 bit protocol
+    - 16 bit checksum
+    - 32 bit src-address
+    - 32 bit dest-address
+    - options ...
+    """
+    # icmp 报文外的 IP 头固定 20 字节
+    head_length = 20
+    return packet[head_length:]
+
 class ICMPMessage:
     """一个 ICMP 报文
 
@@ -67,8 +90,9 @@ class ICMPMessage:
 
     @staticmethod
     def unpack(packet: bytes):
-        head = struct.unpack(">BBHHH", packet[:8])
-        body = packet[8:]
+        icmp_packet = extract_icmp_from_ip(packet)
+        head = struct.unpack(">BBHHH", icmp_packet[:8])
+        body = icmp_packet[8:]
         inst = ICMPMessage(body, head[0], head[1], head[3], head[4])
         return inst
 
