@@ -19,10 +19,12 @@ def icmp_checksum(content: bytes) -> int:
     """计算 icmp 报文的检验和。
 
     计算的范围为整个 icmp 报文，包括头部与数据部。
-    每次取两个字节，累加（溢出部分被截断），输出最后的和。
+    如果数据长度不为偶数，需要在尾部填充一个 0 字节。
+    创建一个 32 bit 的缓冲区，每次取两个字节（16 bit），累加。
+    最后将前 16 bit 和后 16 bit 加在一起，取反，返回。
     """
     length = len(content)
-    if length & 1:  # 奇数
+    if length & 1: # 奇数
         content += b"\x00"
         length += 1
     # 确保按两个字节的步长取值
@@ -33,7 +35,10 @@ def icmp_checksum(content: bytes) -> int:
         # 按两个字节累加
         this = int.from_bytes(fragment, "big")
         result += this
-    return (~result) & 0xffff
+    high_bits = (result & 0xffff0000) >> 16
+    low_bits = (result & 0xffff)
+    ans = high_bits + low_bits
+    return (~ans) & 0xffff
 
 
 class ICMPMessage:
