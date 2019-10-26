@@ -106,18 +106,14 @@ class ICMPMessage:
         self.seq = seq
         self.data = data
         self.length = len(data)
-        self.__checksum_cache = None
 
     @property
     def checksum(self) -> int:
         """ICMP 报文的检验和, unsigned short
         """
-        if self.__checksum_cache is None:
-            # 将检验和置零
-            all_content = struct.pack(self.ICMP_STRUCT,
-                                      self.type, self.code, 0, self.id, self.seq, self.data)
-            self.__checksum_cache = icmp_checksum(all_content)
-        return self.__checksum_cache
+        all_content = struct.pack(self.ICMP_STRUCT,
+                                  self.type, self.code, 0, self.id, self.seq, self.data)
+        return icmp_checksum(all_content)
 
     def __repr__(self):
         return (f"ICMPMessage({self.data}, type=0x{self.type:x}, "
