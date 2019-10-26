@@ -24,7 +24,7 @@ def icmp_checksum(content: bytes) -> int:
     最后将前 16 bit 和后 16 bit 加在一起，取反，返回。
     """
     length = len(content)
-    if length & 1: # 奇数
+    if length & 1:  # 奇数
         content += b"\x00"
         length += 1
     # 确保按两个字节的步长取值
@@ -64,6 +64,13 @@ class ICMPMessage:
         """
         return struct.pack(self.ICMP_STRUCT,
                            self.type, self.code, self.checksum, self.id, self.seq, self.data)
+
+    @staticmethod
+    def unpack(packet: bytes):
+        head = struct.unpack(">BBHHH", packet[:8])
+        body = packet[8:]
+        inst = ICMPMessage(body, head[0], head[1], head[3], head[4])
+        return inst
 
     def __init__(self, data: bytes, type: int = 8, code: int = 0, id: int = 0, seq: int = 0):
         if not isinstance(data, bytes):
