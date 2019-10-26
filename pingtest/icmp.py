@@ -119,9 +119,34 @@ class ICMPMessage:
             self.__checksum_cache = icmp_checksum(all_content)
         return self.__checksum_cache
 
+    def __repr__(self):
+        return (f"ICMPMessage({self.data}, type=0x{self.type:x}, "
+                f"code=0x{self.code:x}, id=0x{self.id:x}, seq=0x{self.seq:x})\n"
+                f"# checksum = 0x{self.checksum:x}")
+
 
 class ICMPConnect:
     """一个 ICMP 连接
+
+    建立一个 ICMP 连接:
+
+    >>> ic = ICMPConnect("127.0.0.1")
+    >>> ic
+    ICMPConnect(target='127.0.0.1', port=80)
+
+    发送一个 ICMPMessage:
+
+    >>> # 先构造报文
+    >>> m = ICMPMessage(b"Hello World")
+    >>> # 发送
+    >>> ic = ic.send(m)
+    >>> # 需要立刻接收，否则丢包
+    >>> message, address = ic.recv()
+    >>> message
+    ICMPMessage(b'Hello', type=0x0, code=0x0, id=0x0, seq=0x0)
+    # checksum = 0xdc2d
+    >>> address
+    ('127.0.0.1', 0))
     """
 
     def recv(self, size=1024, timeout=3) -> tuple:
@@ -137,8 +162,16 @@ class ICMPConnect:
         packet = message.pack()
         self.s.sendto(packet, (self.target, self.port))
 
-    def __init__(self, target: str, port=80):
+    def __init__(self, target: str, port=0):
+        """初始化链接
+
+        :param str target: 字符串类型的 IP 地址或域名
+        :param int port: 发送到目标地址的指定端口，默认 0
+        """
         self.target = target
         self.port = port
         self.s = socket.socket(
             socket.AF_INET, socket.SOCK_RAW, socket.getprotobyname("icmp"))
+
+    def __repr__(self):
+        return f"ICMPConnect(target='{self.target}', port={self.port})"
