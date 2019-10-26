@@ -14,6 +14,7 @@ import socket
 
 __all__ = ("ICMPMessage", "ICMPConnect")
 
+
 def icmp_checksum(content: bytes) -> int:
     """计算 icmp 报文的检验和。
 
@@ -32,9 +33,7 @@ def icmp_checksum(content: bytes) -> int:
         # 按两个字节累加
         this = int.from_bytes(fragment, "big")
         result += this
-        # 截断溢出部分
-        result &= 0xffff
-    return result
+    return (~result) & 0xffff
 
 
 class ICMPMessage:
@@ -88,14 +87,15 @@ class ICMPConnect:
     """一个 ICMP 连接
     """
 
-    def send_and_recv(self, message: ICMPMessage, size=1024) -> bytes:
-        packet = message.pack()
-        self.s.sendto(packet, (self.target, self.port))
+    def recv(self, size=1024, timeout=3):
         return self.s.recvfrom(size)
 
-    def __init__(self, target: str, port=80, timeout=3):
+    def send(self, message: ICMPMessage):
+        packet = message.pack()
+        self.s.sendto(packet, (self.target, self.port))
+
+    def __init__(self, target: str, port=80):
         self.target = target
         self.port = port
-        self.timeout = 3
         self.s = socket.socket(
             socket.AF_INET, socket.SOCK_RAW, socket.getprotobyname("icmp"))
