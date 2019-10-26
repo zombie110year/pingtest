@@ -87,11 +87,9 @@ class ICMPConnect:
     """一个 ICMP 连接
     """
 
-    def send(self, message: ICMPMessage):
+    def send_and_recv(self, message: ICMPMessage, size=1024) -> bytes:
         packet = message.pack()
         self.s.sendto(packet, (self.target, self.port))
-
-    def recv(self, size: int = 1024) -> bytes:
         return self.s.recvfrom(size)
 
     def __init__(self, target: str, port=80, timeout=3):
