@@ -14,3 +14,8 @@ def test_icmp_checksum():
                         b"\x00\x00" # seq
                         # content
                         b"\x00\x00\x11") == 0x1a00
+
+
+def test_ICMPMessage_pack():
+    x = ICMPMessage(b"Hello World", ICMPMessage.TYPE_ECHO_REQUEST)
+    assert x.pack() == b"\x08\x00\x59\xcc\x00\x00\x00\x00Hello World"

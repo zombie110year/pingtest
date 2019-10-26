@@ -13,7 +13,6 @@ import struct
 import socket
 
 
-
 def icmp_checksum(content: bytes) -> int:
     """计算 icmp 报文的检验和。
 
@@ -21,7 +20,7 @@ def icmp_checksum(content: bytes) -> int:
     每次取两个字节，累加（溢出部分被截断），输出最后的和。
     """
     length = len(content)
-    if length & 1: # 奇数
+    if length & 1:  # 奇数
         content += b"\x00"
         length += 1
     # 确保按两个字节的步长取值
@@ -35,3 +34,48 @@ def icmp_checksum(content: bytes) -> int:
         # 截断溢出部分
         result &= 0xffff
     return result
+
+
+class ICMPMessage:
+    """一个 ICMP 报文
+
+    - 8 bit Type
+    - 8 bit code
+    - 16 bit checksum
+    - 16 bit ID
+    - 16 bit sequence
+    - ... content
+    """
+    __slots__ = ("type", "code", "__checksum_cache",
+                 "id", "seq", "data", "length")
+    TYPE_ECHO_REQUEST = 8
+
+    @property
+    def ICMP_STRUCT(self):
+        return f">BBHHH{self.length}s"
+
+    def pack(self):
+        """序列化此对象，打包成结构体以便发送
+        """
+        return struct.pack(self.ICMP_STRUCT,
+                           self.type, self.code, self.checksum, self.id, self.seq, self.data)
+
+    def __init__(self, data: bytes, type: int = 8, code: int = 0, id: int = 0, seq: int = 0):
+        self.type = type
+        self.code = code
+        self.id = id
+        self.seq = seq
+        self.data = data
+        self.length = len(data)
+        self.__checksum_cache = None
+
+    @property
+    def checksum(self) -> int:
+        """ICMP 报文的检验和, unsigned short
+        """
+        if self.__checksum_cache is None:
+            # 将检验和置零
+            all_content = struct.pack(self.ICMP_STRUCT,
+                                      self.type, self.code, 0, self.id, self.seq, self.data)
+            self.__checksum_cache = icmp_checksum(all_content)
+        return self.__checksum_cache
