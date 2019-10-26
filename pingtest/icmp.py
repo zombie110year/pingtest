@@ -61,6 +61,8 @@ class ICMPMessage:
                            self.type, self.code, self.checksum, self.id, self.seq, self.data)
 
     def __init__(self, data: bytes, type: int = 8, code: int = 0, id: int = 0, seq: int = 0):
+        if not isinstance(data, bytes):
+            raise TypeError("data: must bytes", data)
         self.type = type
         self.code = code
         self.id = id
