@@ -154,9 +154,14 @@ class ICMPConnect:
         icmp_message = ICMPMessage.unpack(packet)
         return icmp_message, address
 
-    def send(self, message: ICMPMessage):
+    def send(self, message: ICMPMessage, target=None, port=None):
+        if target is None:
+            target = self.target
+        if port is None:
+            port = self.port
+
         packet = message.pack()
-        self.s.sendto(packet, (self.target, self.port))
+        self.s.sendto(packet, (target, port))
 
     def __init__(self, target: str, port=0, timeout=3):
         """初始化链接
