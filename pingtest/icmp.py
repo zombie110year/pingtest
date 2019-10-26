@@ -79,3 +79,22 @@ class ICMPMessage:
                                       self.type, self.code, 0, self.id, self.seq, self.data)
             self.__checksum_cache = icmp_checksum(all_content)
         return self.__checksum_cache
+
+
+class ICMPConnect:
+    """一个 ICMP 连接
+    """
+
+    def send(self, message: ICMPMessage):
+        packet = message.pack()
+        self.s.sendto(packet, (self.target, self.port))
+
+    def recv(self, size: int = 1024) -> bytes:
+        return self.s.recvfrom(size)
+
+    def __init__(self, target: str, port=80, timeout=3):
+        self.target = target
+        self.port = port
+        self.timeout = 3
+        self.s = socket.socket(
+            socket.AF_INET, socket.SOCK_RAW, socket.getprotobyname("icmp"))
