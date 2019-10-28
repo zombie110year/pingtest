@@ -89,7 +89,7 @@ class MicrosoftPing:
     >>> ping = MicrosoftPing("localhost")
     >>> ping.run()
     """
-    REGEX = re.compile(r"(?:(\d+)%)|(?:(\d+)ms)", re.MULTILINE)
+    REGEX = re.compile(r"(\d+)(?:(?=%)|(?=ms))", re.MULTILINE)
     def __init__(self, addr: str, **options):
         """初始化 Ping 进程与解析器
 
@@ -136,7 +136,7 @@ class MicrosoftPing:
         return self._parse_stdout(res)
 
     def _parse_stdout(self, text: str) -> PingReport:
-        lines = text.split("\n")[-3:]
+        lines = text.split("\n")[-4:]
         summary = "\n".join(lines)
         data = self.REGEX.findall(summary)
         loss = float(data[0]) / 100
