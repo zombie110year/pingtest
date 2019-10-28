@@ -139,8 +139,12 @@ class MicrosoftPing:
         lines = text.split("\n")[-3:]
         summary = "\n".join(lines)
         data = self.REGEX.findall(summary)
+        loss = float(data[0]) / 100
+        mint = float(data[1])
+        maxt = float(data[2])
+        avgt = float(data[3])
         report = PingReport(
-            self.target, data[0], data[1], data[2], data[3],
+            self.target, loss, mint, maxt, avgt,
             **self.options
         )
         return report
