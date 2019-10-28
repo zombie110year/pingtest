@@ -118,24 +118,6 @@ class MicrosoftPing:
     def __str__(self):
         return f"{self.exec} {' '.join(self.args)} {self.target}"
 
-__system_encoding = None
-def get_system_encoding():
-    """获取当前操作系统的字符编码，用于 Windows，会创建一个临时文件
-
-    不要与 Python 的字符串默认编码混淆了，这个编码是操作系统 stdio 的默认编码
-    """
-    DeprecationWarning("将被移除")
-    global __system_encoding
-    if __system_encoding:
-        return __system_encoding
-    else:
-        temp_filename = "no-one-will-call-this-name.no-one-will-call-this-name"
-        with open(temp_filename, "wt") as temporary:
-            encoding = temporary.encoding
-        remove(temp_filename)
-        __system_encoding = encoding
-        return encoding
-
 
 class GNUPing:
     """GNU utils 中的 ping 程序
