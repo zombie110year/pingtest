@@ -229,4 +229,10 @@ def Ping(addr, **options):
     :param bool ipv4: 是否限制只能使用 ipv4
     :param bool ipv6: 是否限制只能使用 ipv6
     """
-    pass
+    if system() == "Windows":
+        return MicrosoftPing(addr, **options)
+    elif system() == "Linux":
+        return GNUPing(addr, **options)
+    else:
+        Warning("不知道你使用的 ping 为哪种版本，姑且认为是 GNU 版，如果出错，请 issue 你的系统名以及 ping 版本")
+        return GNUPing(addr, **options)
