@@ -96,7 +96,7 @@ class MicrosoftPing:
 
 
     def run(self) -> PingReport:
-        cmp = run(self.command, shell=False, stdout=PIPE, encoding=get_system_encoding())
+        cmp = run(self.command, shell=False, stdout=PIPE, text=True)
         res = cmp.stdout
 
         return self._parse_stdout(res)
@@ -124,6 +124,7 @@ def get_system_encoding():
 
     不要与 Python 的字符串默认编码混淆了，这个编码是操作系统 stdio 的默认编码
     """
+    DeprecationWarning("将被移除")
     global __system_encoding
     if __system_encoding:
         return __system_encoding
@@ -196,7 +197,7 @@ class GNUPing:
 
 
     def run(self) -> PingReport:
-        cmp = run(self.command, shell=False, stdout=PIPE, encoding=get_system_encoding())
+        cmp = run(self.command, shell=False, stdout=PIPE, text=True)
         res = cmp.stdout
 
         return self._parse_stdout(res)
