@@ -36,42 +36,6 @@ class PingReport(dict):
         self.update(kwargs)
 
 
-def ping_once(target: str, data: bytes) -> PingReport:
-    m = ICMPMessage(data)
-    ic = ICMPConnect(target)
-    start = perf_counter()
-    ic.send(m)
-    try:
-        reply, address = ic.recv()
-        status = "reached"
-    except socket.timeout:
-        status = "timeout"
-        address = (target, -1)
-    stop = perf_counter()
-    report = PingReport(address[0], status, stop-start)
-    return report
-
-
-def ping(target: str, data: bytes, count=4) -> Iterable[PingReport]:
-    m = ICMPMessage(data)
-    ic = ICMPConnect(target)
-    reports = []
-    for i in range(count):
-        ic.send(m)
-        start = perf_counter()
-        try:
-            reply, address = ic.recv()
-            status = "reach"
-            m.seq += 1
-        except socket.timeout:
-            status = "timeout"
-            address = (target, -1)
-        stop = perf_counter()
-        report = PingReport(address[0], status, stop-start)
-        reports.append(report)
-    return reports
-
-
 class MicrosoftPing:
     """微软 ping 程序
 
