@@ -3,6 +3,7 @@
 import re
 import socket
 from os import remove
+from platform import system
 from subprocess import PIPE
 from subprocess import run
 from time import perf_counter
@@ -60,7 +61,8 @@ class MicrosoftPing:
         :param str addr: 要 ping 的目标地址
         :param int count: 发包的次数
         :param int size: 每个包的字节数
-        :param bool ipv4:
+        :param bool ipv4: 是否限制只能使用 ipv4
+        :param bool ipv6: 是否限制只能使用 ipv6
         """
         self.exec = "ping.exe"
         self.target = f"{addr}"
@@ -159,7 +161,8 @@ class GNUPing:
         :param str addr: 要 ping 的目标地址
         :param int count: 发包的次数
         :param int size: 每个包的字节数
-        :param bool ipv4:
+        :param bool ipv4: 是否限制只能使用 ipv4
+        :param bool ipv6: 是否限制只能使用 ipv6
         """
         self.exec = "ping.exe"
         self.target = f"{addr}"
@@ -215,3 +218,15 @@ class GNUPing:
 
     def __str__(self):
         return f"{self.exec} {' '.join(self.args)} {self.target}"
+
+
+def Ping(addr, **options):
+    """初始化 Ping 进程与解析器
+
+    :param str addr: 要 ping 的目标地址
+    :param int count: 发包的次数
+    :param int size: 每个包的字节数
+    :param bool ipv4: 是否限制只能使用 ipv4
+    :param bool ipv6: 是否限制只能使用 ipv6
+    """
+    pass
